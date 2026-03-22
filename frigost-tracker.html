@@ -956,6 +956,295 @@ const ACHIEVEMENTS = [
     ]
   },
 
+,
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 5 — LA MAIRE DÉNIE (Bienvenue à Frigost)
+  // ─────────────────────────────────────────────────
+  {
+    id: 'maire',
+    name: 'La maire dénie',
+    nameFR: 'La maire dénie — Bienvenue à Frigost',
+    icon: '🏛',
+    parallel: 'Paralelo con: Problemas y soluciones · Agricultura o alquimia · Los supervivientes M1',
+    warning: '⚠ Este logro agrupa misiones de acceso fundamentales. Bienvenue à Frigost es prereq para L1-M3 (El mal lo dijo). Hacerlo lo antes posible.',
+    quests: [
+      {
+        id: 'ma1', num: 1,
+        name: 'La terre banquise',
+        prereqs: [],
+        zone: 'Burgo [-77,-42] — visitar zonas de Frigost 1',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ma2', num: 2,
+        name: 'La maire de glace',
+        prereqs: ['ma1'],
+        zone: 'Burgo — PNJs de la alcaldesa',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ma3', num: 3,
+        name: 'Full Contact',
+        prereqs: [],
+        zone: 'Campos de hielo — mobs Jalamuts',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ma4', num: 4,
+        name: 'Les monologues du vaccin',
+        prereqs: [],
+        zone: 'Campos de hielo — misión previa a Los monólogos de la vacuna (L1-M1)',
+        resources: null,
+        warning: 'Esta misión es la versión "de acceso" previa al logro Jugar al médico.',
+        badges: [],
+      },
+      {
+        id: 'ma5', num: 5,
+        name: 'Bienvenue à Frigost',
+        prereqs: ['ma2', 'ma3', 'ma4'],
+        zone: 'Burgo [-77,-42] — entregar a la Maire Cantille',
+        resources: null,
+        warning: '⚠ IMPORTANTE: completar esta misión desbloquea el prereq para L1-M3 (El mal lo dijo). También desbloquea L\'essentiel est dans le Lac Gelé y Ennemis d\'état.',
+        badges: [],
+      },
+      {
+        id: 'ma6', num: 6,
+        name: 'L\'essentiel est dans le Lac Gelé',
+        prereqs: ['ma5'],
+        zone: 'Lago helado — mobs Güinos y zona',
+        resources: null,
+        warning: 'Prereq para Les rescapés de Frigost y Frigost une île pas comme les autres.',
+        badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 6 — LES RESCAPÉS DE FRIGOST
+  // ─────────────────────────────────────────────────
+  {
+    id: 'rescapes',
+    name: 'Los rescatados de Frigost',
+    nameFR: 'Les rescapés de Frigost',
+    icon: '🆘',
+    parallel: 'Este logro se completa automáticamente al terminar las 7 misiones indicadas de otros logros',
+    warning: '⚠ Este logro NO tiene misiones propias — se completa haciendo misiones de Los supervivientes (L2). Marca cada una manualmente cuando la hagas en L2.',
+    quests: [
+      {
+        id: 'resc1', num: 1,
+        name: 'Bricole Girl',
+        prereqs: [],
+        zone: '→ Ver Logro 2 — Los supervivientes M1',
+        resources: null,
+        warning: 'Esta misión cuenta tanto para Los supervivientes como para este logro.',
+        badges: [],
+      },
+      {
+        id: 'resc2', num: 2,
+        name: 'Promenons-nous dans les bois',
+        prereqs: ['resc1'],
+        zone: '→ Ver Logro 2 — Los supervivientes M2',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'resc3', num: 3,
+        name: 'Les chasseurs',
+        prereqs: ['resc2'],
+        zone: '→ Ver Logro 2 — Los supervivientes M3',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'resc4', num: 4,
+        name: 'Il préfère la mort en mer',
+        prereqs: ['resc3'],
+        crossPrereqs: [
+          { label: 'Antiroyaliste', logro: 'Porte, monstre, trésor' },
+          { label: 'Les joyeux de la couronne', logro: 'Porte, monstre, trésor' },
+        ],
+        zone: '→ Ver Logro 2 — Los supervivientes M4',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'resc5', num: 5,
+        name: 'Chauffage à moindre frais',
+        prereqs: ['resc4'],
+        crossPrereqs: [
+          { label: 'Fais dodo, t\'auras du gâteau', logro: 'Porte, monstre, trésor' },
+        ],
+        zone: '→ Ver Logro 2 — Los supervivientes M5',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'resc6', num: 6,
+        name: 'À la recherche de Dan Lavy',
+        prereqs: ['resc5'],
+        zone: '→ Ver Logro 2 — Los supervivientes M6',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'resc7', num: 7,
+        name: 'À qui profite le boufmouth',
+        prereqs: ['resc6'],
+        crossPrereqs: [
+          { label: 'Lavomatique', logro: 'Porte, monstre, trésor' },
+          { label: 'La marche de l\'impératrice', logro: 'Problemas y soluciones M4' },
+        ],
+        zone: '→ Ver Logro 2 — Los supervivientes M7',
+        resources: null,
+        warning: 'Al completar estas 7 misiones, volver con la Maire Cantille en [-77,-42] para terminar este logro.',
+        badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 7 — PORTE, MONSTRE, TRÉSOR
+  // ─────────────────────────────────────────────────
+  {
+    id: 'porte',
+    name: 'Porte, monstre, trésor',
+    nameFR: 'Porte, monstre, trésor',
+    icon: '🔑',
+    parallel: '⚠ HACER LO ANTES POSIBLE — estas misiones desbloquean prereqs críticos para Logros 1 y 2',
+    warning: '⚠ CRÍTICO: cada misión de este logro desbloquea el acceso a una mazmorra Y genera un prereq que bloquea misiones de otros logros. Hacerlas en paralelo con todo lo demás desde el principio.',
+    globalResources: 'Cada misión requiere completar el dungeon correspondiente + tener ya hecha la mazmorra anterior',
+    quests: [
+      {
+        id: 'pt1', num: 1,
+        name: 'Antiroyaliste — Porte Royalmouth',
+        prereqs: [],
+        zone: 'Mazmorra 1 — Serre du Royalmouth (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M4 (Il préfère la mort en mer). Hacer cuanto antes.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt2', num: 2,
+        name: 'Les joyeux de la couronne — Porte Mansot Royal',
+        prereqs: ['pt1'],
+        zone: 'Mazmorra 2 — Excavation du Mansot Royal (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M4 (Il préfère la mort en mer). Hacer cuanto antes.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt3', num: 3,
+        name: 'Fais dodo, t\'auras du gâteau — Porte Ben le Ripate',
+        prereqs: ['pt2'],
+        zone: 'Mazmorra 3 — Épave du Golandais Violent (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M5 (Chauffage à moindre frais).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt4', num: 4,
+        name: 'Lavomatique — Porte Obsidiantre',
+        prereqs: ['pt3'],
+        zone: 'Mazmorra 4 — Hypogée de l\'Obsidiantre (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M7 (À qui profite le boufmouth).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt5', num: 5,
+        name: 'Pas de quartier — Porte Tengu Givrefoux',
+        prereqs: ['pt4'],
+        zone: 'Mazmorra 5 — Tanière Givrefoux (completa)',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt6', num: 6,
+        name: 'Sans ma barbe, quelle barbe — Porte Korriandre',
+        prereqs: ['pt5'],
+        zone: 'Mazmorra 6 — Antre du Korriandre (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M9 (Un ami qui ne vous veut pas que du bien).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt7', num: 7,
+        name: 'Là-haut sur la montagne — Porte Kolosso',
+        prereqs: ['pt6'],
+        zone: 'Mazmorra 7 — Cavernes du Kolosso (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M10 (Maya la belle).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt8', num: 8,
+        name: 'Le festin des Gloursons — Porte Glourséleste',
+        prereqs: ['pt7'],
+        zone: 'Mazmorra 8 — Antichambre des Gloursons (completa)',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 8 — FRIGOST, UNE ÎLE PAS COMME LES AUTRES
+  // ─────────────────────────────────────────────────
+  {
+    id: 'touriste',
+    name: 'Frigost, una isla diferente',
+    nameFR: 'Frigost, une île pas comme les autres',
+    icon: '🗺',
+    parallel: 'Hacer al final — requiere haber completado todos los dungeons de Frigost 1 y 2',
+    quests: [
+      {
+        id: 'tour1', num: 1,
+        name: 'L\'essentiel est dans le Lac Gelé',
+        prereqs: ['ma5'],
+        zone: '→ Ver Logro 5 — La maire dénie M6',
+        resources: null,
+        warning: 'Prereq obligatorio para este logro.',
+        badges: [],
+      },
+      {
+        id: 'tour2', num: 2,
+        name: 'Frigost, une île pas comme les autres',
+        prereqs: ['tour1'],
+        zone: 'Burgo [-77,-42] — Lucette Brifian',
+        resources: null,
+        warning: 'Visitar 11 mapas específicas de toda la isla. Requiere haber completado TODOS los dungeons de Frigost 1 y 2 para poder acceder a todas las zonas.',
+        badges: [],
+      },
+    ],
+    extraInfo: [
+      '📍 Serre de Frigost [-84,-49]',
+      '📍 Transporteur Frigostien [-68,-34]',
+      '📍 Carrière de glace [-64,-55]',
+      '📍 Village englouti [-61,-58]',
+      '📍 Récifs du Berceau d\'Alma [-52,-71]',
+      '📍 Grotte aquatique des Larmes d\'Ouronigride [-73,-86]',
+      '📍 Antre du YeCh\'Ti [-79,-78]',
+      '📍 Cœur de la forêt pétrifiée [-76,-68]',
+      '📍 Machinerie des Crocs de verre [-64,-65]',
+      '📍 Mont Torrideau [-63,-75]',
+      '📍 Château Kontatras (zona interior)',
+    ],
+  },
+
 ];
 
 // ═══════════════════════════════════════════════════
@@ -1111,6 +1400,11 @@ function renderAchievement(a) {
 
   if (done) {
     body += `<div class="achievement-done-badge">✦ LOGRO COMPLETADO ✦</div>`;
+  }
+
+  // Extra info (list of locations etc)
+  if (a.extraInfo) {
+    body += `<div class="global-resources" style="border-top:1px solid var(--border)"><strong>MAPAS A VISITAR: </strong>${a.extraInfo.join(' · ')}</div>`;
   }
 
   return `
