@@ -1245,6 +1245,193 @@ const ACHIEVEMENTS = [
     ],
   },
 
+,
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 9 — L'ÂME DE GLACE
+  // ─────────────────────────────────────────────────
+  {
+    id: 'ame',
+    name: 'El alma de hielo',
+    nameFR: 'L\'âme de glace',
+    icon: '❄',
+    parallel: 'Paralelo con: La maire dénie · L\'hiver arrive · Développement durable',
+    warning: '⚠ El Prologue tiene 3 versiones según alineamiento: La fatalité (brâkmarien), La destinée (bontarien), La rivalité (neutre). Solo hacer UNA.',
+    quests: [
+      {
+        id: 'ame1', num: 1,
+        name: 'Prologue (La destinée / La fatalité / La rivalité)',
+        prereqs: [],
+        zone: 'Hacer ANTES de llegar a Frigost — misión introductoria',
+        resources: null,
+        warning: '3 versiones según alineamiento: La fatalité (brâkmarien) · La destinée (bontarien) · La rivalité (neutre). Solo hacer una.',
+        badges: [],
+      },
+      {
+        id: 'ame2', num: 2,
+        name: 'Malédiction!',
+        prereqs: ['ame1'],
+        zone: 'Frigost 1 — Burgo y zonas iniciales',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ame3', num: 3,
+        name: 'Mission Solution',
+        prereqs: ['ame2'],
+        zone: 'Frigost 2 — Colmillos de Cristal (mobs Tejarveles para drop de recursos)',
+        resources: 'Recursos de quête en mobs Crocs de Verre',
+        warning: 'Hacer en paralelo con Développement durable en la misma zona.',
+        badges: [],
+      },
+      {
+        id: 'ame4', num: 4,
+        name: 'Chaud et froid',
+        prereqs: ['ame3'],
+        zone: 'Frigost 3 — Castillo Kontatras (Nileza, mazmorras F3)',
+        resources: null,
+        warning: 'Requiere acceso a Frigost 3 (haber completado las 5 mazmorras del Castillo). Participar en mazmorra de Nileza.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'ame5', num: 5,
+        name: 'Le givre des révélations',
+        prereqs: ['ame4'],
+        zone: 'Frigost 3 — Torre de la Clepsidra + Crevasse Perge [-76,-80]',
+        resources: '1x Pioche vibrante (dada por Hazieff) · Interactuar con bloque de Taroudium en Lac Gelé [-64,-55]',
+        warning: 'Requiere haber terminado Lumière sur l\'ombre. Hablar con Djaul y Jiva — el alineamiento da bonus distintos pero el resultado de la quête es el mismo. Hablar con las 3 Nordes en [-76,-80].',
+        badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 10 — L'HIVER ARRIVE
+  // ─────────────────────────────────────────────────
+  {
+    id: 'hiver',
+    name: 'El invierno llega',
+    nameFR: 'L\'hiver arrive',
+    icon: '🌨',
+    parallel: 'Paralelo con: L\'âme de glace · Développement durable',
+    warning: '⚠ Todo el logro requiere que el pueblo enseveli esté LIBERADO cada vez que hablas con un PNJ de allí.',
+    quests: [
+      {
+        id: 'hiv1', num: 1,
+        name: 'Les rescapés du Village Enseveli',
+        prereqs: [],
+        crossPrereqs: [
+          { label: 'Dépôt de ravitaillement', logro: 'Logro 2 — Los supervivientes M8' },
+          { label: 'Un ami qui ne vous veut pas que du bien', logro: 'Logro 2 — Los supervivientes M9' },
+          { label: 'Maya la belle', logro: 'Logro 2 — Los supervivientes M10' },
+        ],
+        zone: 'Pueblo enseveli [-77,-72] — Grobidet',
+        resources: null,
+        warning: '⚠ Se completa haciendo las M8, M9 y M10 de Los supervivientes. Pueblo enseveli debe estar LIBERADO. Volver con Grobidet al terminar las 3.',
+        badges: [],
+      },
+      {
+        id: 'hiv2', num: 2,
+        name: 'Les derniers rescapés',
+        prereqs: ['hiv1'],
+        zone: 'Monte Tórrido [-68,-76] — Baron d\'Ouillard + Castillo Kontatras',
+        resources: 'Mensaje de Sylargh (objeto de quête) — llevar a Gobiling en Isla de Sakaï [-53,-41] para traducir',
+        warning: 'Nivel > 179 requerido. Implica mazmorra de Sylargh (Frigost 3).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'hiv3', num: 3,
+        name: 'La vie de château',
+        prereqs: ['hiv2'],
+        zone: 'Castillo Kontatras — mazmorras de Frigost 3',
+        resources: null,
+        warning: 'Requiere acceso completo a Frigost 3.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'hiv4', num: 4,
+        name: 'La machine à démonter le temps',
+        prereqs: ['hiv3'],
+        zone: 'Frigost 3 — Torre de la Clepsidra',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'hiv5', num: 5,
+        name: 'Il faut mettre un terme aux maîtres',
+        prereqs: ['hiv4'],
+        zone: 'Frigost 3 — mazmorras del Castillo (Missiz Frizz, Klime, Comte Harebourg)',
+        resources: null,
+        warning: 'Requiere completar las mazmorras finales de Frigost 3.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'hiv6', num: 6,
+        name: 'Un comte de faits divers',
+        prereqs: ['hiv5'],
+        zone: 'Frigost 3 — Castillo Kontatras, Comte Harebourg',
+        resources: null,
+        warning: 'Última misión del logro. Implica el combate final contra el Conde Harebourg.',
+        badges: ['dungeon'],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 11 — ÉPILOGUE HIVERNAL
+  // ─────────────────────────────────────────────────
+  {
+    id: 'epilogue',
+    name: 'Epílogo invernal',
+    nameFR: 'Épilogue hivernal',
+    icon: '📜',
+    parallel: 'Hacer al final — requiere completar L\'âme de glace y L\'hiver arrive',
+    quests: [
+      {
+        id: 'epi1', num: 1,
+        name: 'Mille et un jours, un destin',
+        prereqs: [],
+        crossPrereqs: [
+          { label: 'L\'âme de glace (completo)', logro: 'Logro 9' },
+          { label: 'L\'hiver arrive (completo)', logro: 'Logro 10' },
+        ],
+        zone: 'Frigost 3 — Castillo Kontatras',
+        resources: null,
+        warning: 'Misión de epílogo narrativo. Requiere haber completado los dos logros principales de Frigost 3.',
+        badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 12 — FRAÎCHEMENT PONDU (DOFUS DES GLACES)
+  // ─────────────────────────────────────────────────
+  {
+    id: 'dofus',
+    name: 'El Dofus de los Hielos',
+    nameFR: 'Fraîchement pondu — Le Dofus des Glaces',
+    icon: '💎',
+    parallel: 'OBJETIVO FINAL — requiere completar 72 quêtes en Frigost 1, 2 y 3 (succès "Oeuf à la neige")',
+    warning: '⚠ El Dofus de los Hielos se obtiene como RECOMPENSA DE ÉXITO, no de quête. Necesitas completar el logro "Oeuf à la neige" (72 misiones en total en toda Frigost).',
+    quests: [
+      {
+        id: 'dof1', num: 1,
+        name: 'Le Dofus des Glaces',
+        prereqs: [],
+        crossPrereqs: [
+          { label: 'Oeuf à la neige (72 quêtes Frigost completadas)', logro: 'Logro global de Frigost' },
+          { label: 'Épilogue hivernal completado', logro: 'Logro 11' },
+        ],
+        zone: 'Frigost — completar el succès "Oeuf à la neige"',
+        resources: null,
+        warning: '72 quêtes en Frigost 1 + 2 + 3 son necesarias para el succès "Oeuf à la neige". El Dofus se recibe automáticamente como recompensa del succès. Todos los logros de Frigost deben estar completados.',
+        badges: [],
+      },
+    ]
+  },
+
 ];
 
 // ═══════════════════════════════════════════════════
