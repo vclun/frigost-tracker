@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frigost Quest Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #0f1525;
+    --surface2: #141c30;
+    --border: #1e2d4a;
+    --border2: #2a3d5e;
+    --ice: #7eb8d4;
+    --ice2: #a8d4e8;
+    --ice3: #c8e8f4;
+    --gold: #c8a96e;
+    --gold2: #e0c98a;
+    --red: #c04444;
+    --green: #3a8a5a;
+    --green2: #4aaa6e;
+    --text: #d0dde8;
+    --text2: #8a9db8;
+    --text3: #5a6d84;
+    --done-bg: #0d1f14;
+    --done-border: #1a3a24;
+    --locked-bg: #0e1218;
+    --locked-text: #3a4a5a;
+    --warn: #c07820;
+    --warn2: #e09030;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(126,184,212,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(200,169,110,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--ice2);
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 40px rgba(126,184,212,0.3);
+  }
+  header p {
+    color: var(--text2);
+    font-style: italic;
+    margin-top: 6px;
+    font-size: 1rem;
+  }
+
+  /* GLOBAL PROGRESS */
+  .global-progress {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .global-progress .label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ice), var(--ice2));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .global-progress .count {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--ice);
+    white-space: nowrap;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--ice); border-color: var(--border2); }
+  .tab-btn.active { background: var(--surface2); color: var(--ice2); border-color: var(--ice); }
+  .tab-btn.completed { color: var(--green2); border-color: var(--green); }
+  .tab-btn.active.completed { background: var(--done-bg); }
+
+  /* ACHIEVEMENT */
+  .achievement {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .achievement.completed { border-color: var(--green); background: var(--done-bg); }
+
+  .achievement-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .achievement-header:hover { background: rgba(255,255,255,0.02); }
+
+  .achievement-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+  }
+  .achievement.completed .achievement-icon { border-color: var(--green); background: var(--done-bg); }
+
+  .achievement-title {
+    flex: 1;
+  }
+  .achievement-title h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ice2);
+    letter-spacing: 0.05em;
+  }
+  .achievement.completed .achievement-title h2 { color: var(--green2); }
+  .achievement-title .fr-name {
+    font-size: 0.82rem;
+    color: var(--text3);
+    font-style: italic;
+  }
+
+  .achievement-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mini-bar-wrap {
+    width: 80px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    background: var(--ice);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .achievement.completed .mini-bar-fill { background: var(--green2); }
+  .progress-text {
+    font-size: 0.8rem;
+    color: var(--text2);
+    font-family: 'Cinzel', serif;
+    white-space: nowrap;
+  }
+  .chevron {
+    color: var(--text3);
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+  }
+  .achievement.open .chevron { transform: rotate(180deg); }
+
+  /* ACHIEVEMENT BODY */
+  .achievement-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  .achievement.open .achievement-body { display: block; }
+
+  /* PARALLEL NOTE */
+  .parallel-note {
+    padding: 10px 20px;
+    background: rgba(200,169,110,0.06);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--gold);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .parallel-note .icon { flex-shrink: 0; margin-top: 2px; }
+
+  /* GLOBAL RESOURCES */
+  .global-resources {
+    padding: 12px 20px;
+    background: rgba(126,184,212,0.04);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text2);
+  }
+  .global-resources strong { color: var(--ice); font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.05em; }
+
+  /* BRANCH SELECTOR */
+  .branch-selector {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .branch-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--warn2);
+  }
+  .branch-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .branch-btn:hover { color: var(--ice); border-color: var(--border2); }
+  .branch-btn.selected { color: var(--ice2); border-color: var(--ice); background: rgba(126,184,212,0.08); }
+
+  /* QUESTS */
+  .quest {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: background 0.2s;
+  }
+  .quest:last-child { border-bottom: none; }
+  .quest:hover { background: rgba(255,255,255,0.015); }
+  .quest.done { background: var(--done-bg); }
+  .quest.locked { opacity: 0.45; pointer-events: none; }
+  .quest.locked .quest-name { color: var(--locked-text); }
+
+  /* Checkbox */
+  .quest-check {
+    width: 20px; height: 20px;
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    background: var(--surface2);
+    font-size: 0.75rem;
+  }
+  .quest-check:hover { border-color: var(--ice); }
+  .quest.done .quest-check { background: var(--green); border-color: var(--green2); color: white; }
+
+  .quest-content { flex: 1; min-width: 0; }
+
+  .quest-top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .quest-num {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    color: var(--text3);
+    flex-shrink: 0;
+  }
+  .quest-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  .quest.done .quest-name { color: var(--text3); text-decoration: line-through; }
+
+  .quest-badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+  .badge {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .badge-dungeon { background: rgba(192,68,68,0.15); color: var(--red); border: 1px solid rgba(192,68,68,0.3); }
+  .badge-wait { background: rgba(192,120,32,0.15); color: var(--warn2); border: 1px solid rgba(192,120,32,0.3); }
+  .badge-group { background: rgba(126,184,212,0.1); color: var(--ice); border: 1px solid rgba(126,184,212,0.2); }
+  .badge-solo { background: rgba(90,109,132,0.2); color: var(--text2); border: 1px solid var(--border2); }
+  .badge-choice { background: rgba(200,169,110,0.15); color: var(--gold); border: 1px solid rgba(200,169,110,0.3); }
+
+  .quest-meta {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .quest-prereq {
+    font-size: 0.8rem;
+    color: var(--text3);
+    display: flex;
+    gap: 5px;
+    align-items: flex-start;
+  }
+  .quest-prereq .prereq-icon { flex-shrink: 0; margin-top: 1px; }
+  .prereq-cross { color: var(--warn); font-weight: 600; }
+
+  .quest-zone {
+    font-size: 0.82rem;
+    color: var(--text2);
+    font-style: italic;
+    display: flex;
+    gap: 5px;
+  }
+
+  .quest-resources {
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+  .quest-resources .res-label {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    margin-right: 4px;
+  }
+
+  .quest-warning {
+    font-size: 0.8rem;
+    color: var(--warn2);
+    display: flex;
+    gap: 5px;
+  }
+
+  .quest-locked-msg {
+    font-size: 0.78rem;
+    color: var(--text3);
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  /* SECTION DIVIDER inside quests */
+  .quest-section-header {
+    padding: 8px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+
+  /* COMPLETED BADGE */
+  .achievement-done-badge {
+    padding: 12px 20px;
+    text-align: center;
+    color: var(--green2);
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    background: var(--done-bg);
+    border-top: 1px solid var(--done-border);
+  }
+
+  /* RESET */
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 8px 20px;
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text3);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { color: var(--red); border-color: var(--red); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.6rem; }
+    .quest-badges { display: none; }
+    .mini-bar-wrap { width: 50px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <h1>❄ Frigost Quest Tracker</h1>
+    <p>Seguimiento de misiones — Isla de Frigost · Dofus</p>
+  </header>
+
+  <div class="global-progress">
+    <span class="label">PROGRESO TOTAL</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="globalBar" style="width:0%"></div>
+    </div>
+    <span class="count" id="globalCount">0 / 0 misiones</span>
+  </div>
+
+  <div class="tabs" id="tabsContainer"></div>
+  <div id="achievementsContainer"></div>
+
+  <button class="reset-btn" onclick="resetAll()">⚠ Resetear todo el progreso</button>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATOS
+// ═══════════════════════════════════════════════════
+
+const ACHIEVEMENTS = [
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 1 — JUGAR AL MÉDICO
+  // ─────────────────────────────────────────────────
+  {
+    id: 'medico',
+    name: 'Jugar al médico',
+    nameFR: 'Jouer au docteur',
+    icon: '⚕',
+    parallel: 'Paralelo con: Los supervivientes · Agricultura o alquimia · Problemas y soluciones',
+    quests: [
+      {
+        id: 'med1',
+        num: 1,
+        name: 'Los monólogos de la vacuna',
+        prereqs: [],
+        zone: 'Campos de hielo — mobs Jalamuts',
+        resources: '6x Muestras sangre Boufmouth (30% base)',
+        warning: 'Necesitas 3 personas para abrir la reja. Hay cita con horario fijo — si no conviene, esperar 24h para cambiarla. Combate contra La Bête: usar sortilegio de Albert ANTES de matar.',
+        badges: ['group'],
+      },
+      {
+        id: 'med2',
+        num: 2,
+        name: 'Espigas de Emi',
+        prereqs: ['med1'],
+        zone: 'Burgo + zonas accesibles — visitar 7 PNJs',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'med3',
+        num: 3,
+        name: 'El mal lo dijo',
+        prereqs: ['med2'],
+        crossPrereqs: [
+          { label: 'Bienvenue à Frigost', logro: 'Misión de acceso' },
+          { label: 'Pauvre Kiki', logro: 'Problemas y soluciones M1' },
+          { label: 'Gène et tique', logro: 'Problemas y soluciones M5' },
+          { label: '1ª misión de Agricultura o alquimia', logro: 'Agricultura o alquimia M1' },
+        ],
+        zone: 'Mazmorra 1 — Invernáculo del Jalamut Real (obligatoria)',
+        resources: '5x Poil Smilomouth · 5x Cuir Sanglacier · 1x Huile Mamansot · 1x Gland Ecumouth · 10x Eau Calme · 5x Frigrowka · 5x Friswein',
+        warning: 'Esperar 1 SEMANA (la vacuna temporal expira). Necesitas alquimista niv.60 para craftear Jus d\'Ecumouth. Combate en [-64,-48].',
+        badges: ['dungeon', 'wait'],
+      },
+      {
+        id: 'med4',
+        num: 4,
+        name: 'Convoy humanitario',
+        prereqs: ['med3'],
+        crossPrereqs: [
+          { label: 'La fonte des glaces', logro: 'Misión de acceso' },
+          { label: 'C\'est frais mais c\'est pas grave', logro: 'Acceso pueblo sepultado' },
+        ],
+        zone: 'Mazmorra 3 — Restos del Roca Negra (Chêne Mou) + isla de Grobe (mobs Tsume-bozu)',
+        resources: '10x Poêlée paysanne · 10x Grillade Brâkmarienne · 10x Marinade Sucrée-Salée · 10x Boudin noir · 10x Filet Mignon · 10x Potion Torboyo · 10x Poisskaille · 30x Pain Frostiz · 10x Laine Yokaï Givrefoux · 10x Laine Maho Givrefoux · 50x Aubergine · 10x Pelle Teuze · 10x Pelle Boisaille · 10x Marteau Boisaille · 5x Planche Salut',
+        warning: 'El pueblo enseveli debe estar libre de Givrefoux al entregar.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'med5',
+        num: 5,
+        name: 'Sangre patas arriba',
+        prereqs: ['med4'],
+        zone: 'Bosque petrificado — recoger 4 muestras en bloques de hielo',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'med6',
+        num: 6,
+        name: 'Un remedio para todos los males',
+        prereqs: ['med5'],
+        zone: 'Mazmorra 7 — Cavernas de Tejossus (Kolosso)',
+        resources: '5x Écorce Abrazif · 5x Lamelle Dramanite · 5x Volve Fistulor · 5x Volve Fongeur · 5x Lamelle Mérulette · 1x Patte Korriandre',
+        warning: 'Combate final contra La Créature en [-64,-67] — hasta 7 acompañantes.',
+        badges: ['dungeon', 'group'],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 2 — LOS SUPERVIVIENTES DE FRIGOST
+  // ─────────────────────────────────────────────────
+  {
+    id: 'superv',
+    name: 'Los supervivientes de Frigost',
+    nameFR: 'Les survivants de Frigost',
+    icon: '🧭',
+    parallel: 'Paralelo con: Jugar al médico · Agricultura o alquimia · Problemas y soluciones (pero con muchas dependencias cruzadas — ver avisos)',
+    quests: [
+      {
+        id: 'sv1',
+        num: 1,
+        name: 'Chica bricoladora (Bricole Girl)',
+        prereqs: [],
+        zone: 'Burgo — visitar PNJs',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'sv2',
+        num: 2,
+        name: 'Paseemos por el bosque',
+        prereqs: ['sv1'],
+        zone: 'Puerto de Escarcha [-76,-33] → Bosque pinos perdidos [-59,-52]',
+        resources: null,
+        warning: '1 combate evitable: elegir "S\'enfuir comme un tofu" para saltarlo. Si combates: 3x Smilomouth.',
+        badges: ['solo'],
+      },
+      {
+        id: 'sv3',
+        num: 3,
+        name: 'Los cazadores',
+        prereqs: ['sv2'],
+        zone: 'Mazmorra 2 — Excavación del Morsagüino Real (Mansot Royal) completa',
+        resources: 'Drop automático al acabar: Bijoux de famille de Gérard',
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'sv4',
+        num: 4,
+        name: 'Il préfère la mort en mer',
+        prereqs: ['sv3'],
+        crossPrereqs: [
+          { label: 'Antiroyaliste', logro: 'Porte, monstre, trésor (Porte Royalmouth)' },
+          { label: 'Les joyeux de la couronne', logro: 'Porte, monstre, trésor (Porte Mansot Royal)' },
+        ],
+        zone: 'Cuna de Alma [-56,-77] → mini-dungeon Esprit Rebelle [-58,-83]',
+        resources: '1x Moyenne pierre d\'âme',
+        warning: 'Necesitas el sort "Capture d\'âmes". Mini-dungeon con cooldown 24h — preferible ir con 4 personas. 2 combates (1 solo + 1 en grupo).',
+        badges: ['dungeon', 'group'],
+      },
+      {
+        id: 'sv5',
+        num: 5,
+        name: 'Chauffage à moindre frais',
+        prereqs: ['sv4'],
+        crossPrereqs: [
+          { label: 'Fais dodo, t\'auras du gâteau', logro: 'Porte, monstre, trésor (Porte Ben le Ripate)' },
+        ],
+        zone: 'Lágrimas de Uronígride [-68,-85] — farmear Atomísticos (12% drop Atomystique intrigant)',
+        resources: '10x Rose à Lysa (20% en mobs Lágrimas, 100% en Atomísticos) · 5x Rose Ejoséphine (recolectar en 9 posiciones, repop 10 min) · 1x Pandaburg o 1x Pandapils (comprar en Pandazaap [20,-29])',
+        warning: 'Comprar la poción ANTES de hablar con el Capitaine Gneux.',
+        badges: [],
+      },
+      {
+        id: 'sv6',
+        num: 6,
+        name: 'À la recherche de Dan Lavy',
+        prereqs: ['sv5'],
+        zone: 'Hipogeo del Obsidiantre — solo hasta sala 4 (sin terminar el dungeon)',
+        resources: null,
+        warning: 'NO lanzar el combate del dungeon. NO terminar el dungeon — necesitas la savepoint para volver.',
+        badges: ['group'],
+      },
+      {
+        id: 'sv7',
+        num: 7,
+        name: 'À qui profite le boufmouth',
+        prereqs: ['sv6'],
+        crossPrereqs: [
+          { label: 'Lavomatique', logro: 'Porte, monstre, trésor (Porte Obsidiantre)' },
+          { label: 'La marche de l\'impératrice', logro: 'Problemas y soluciones M4' },
+        ],
+        zone: 'Crevasse Perge [-75,-83] + Burgo (taverna, milicia)',
+        resources: null,
+        warning: 'Combate contra 3 Boufmouths dressés.',
+        badges: ['group'],
+      },
+      {
+        id: 'sv8',
+        num: 8,
+        name: 'Dépôt de ravitaillement',
+        prereqs: ['sv7'],
+        zone: 'Pueblo enseveli [-80,-73]',
+        resources: null,
+        warning: 'El pueblo enseveli debe estar LIBERADO. Algunos PNJs tienen franjas horarias específicas.',
+        badges: [],
+      },
+      {
+        id: 'sv9',
+        num: 9,
+        name: 'Un ami qui ne vous veut pas que du bien',
+        prereqs: ['sv8'],
+        crossPrereqs: [
+          { label: 'Sans ma barbe, quelle barbe', logro: 'Porte, monstre, trésor (Porte Korriandre)' },
+        ],
+        zone: 'Mazmorra 7 — Cavernas de Tejossus (Kolosso) hasta sala 4 + Colmillos de Cristal (mobs)',
+        resources: '35x Bois de Tremble · Recursos de quête (drop en mobs Colmillos de Cristal)',
+        warning: 'El pueblo enseveli debe estar LIBERADO.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'sv10',
+        num: 10,
+        name: 'Maya la belle',
+        prereqs: ['sv9'],
+        crossPrereqs: [
+          { label: 'Là-haut sur la montagne', logro: 'Porte, monstre, trésor (Porte Kolosso)' },
+        ],
+        zone: 'Mazmorra 8 — Antecámara de los Golosotes (Glourséleste) completa',
+        resources: null,
+        warning: 'El pueblo enseveli debe estar LIBERADO. 1 combate solo + compañero.',
+        badges: ['dungeon', 'solo'],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 3 — AGRICULTURA O ALQUIMIA
+  // ─────────────────────────────────────────────────
+  {
+    id: 'agri',
+    name: 'Agricultura o alquimia',
+    nameFR: 'Agriculture ou alchimie',
+    icon: '🌾',
+    parallel: 'Paralelo con: Jugar al médico · Los supervivientes · Problemas y soluciones',
+    hasBranches: true,
+    branches: ['Paysan (Campesino)', 'Alchimiste (Alquimista)'],
+    warning: '⚠ ELECCIÓN DEFINITIVA: al hacer la M1 de una rama ya no puedes cambiar. ¡No necesitas ser Paysan ni Alchimiste en el juego para hacer cualquiera de las dos!',
+    globalResources: '10x Frostiz o 2x Perce-Neige (al inicio) · Varias salas del Hipogeo Obsidiantre (sin jefe) en M6',
+    quests: [
+      // PAYSAN
+      {
+        id: 'ag_p1', num: 1, branch: 0,
+        name: 'En semant, se ment',
+        prereqs: [],
+        zone: 'Campos de hielo [-82,-48] — Cassiopée Hisane',
+        resources: '10x Frostiz · mobs zona Campos de hielo',
+        warning: null, badges: ['choice'],
+      },
+      {
+        id: 'ag_p2', num: 2, branch: 0,
+        name: 'Pomdeupin vaut mieux que trois tu l\'auras',
+        prereqs: ['ag_p1'],
+        zone: 'Bosque pinos perdidos — mobs Smilomouths/zona',
+        resources: '40x Graine Ola (drop automático en mobs) · 5x Graine Deupin (recolectar en 9 posiciones, repop 5 min)',
+        warning: null, badges: [],
+      },
+      {
+        id: 'ag_p3', num: 3, branch: 0,
+        name: 'Massacre au hakapik',
+        prereqs: ['ag_p2'],
+        zone: 'Lago helado — mobs Mansots',
+        resources: 'Graines en mobs Mansots',
+        warning: null, badges: [],
+      },
+      {
+        id: 'ag_p4', num: 4, branch: 0,
+        name: 'Mettre son grain de sel',
+        prereqs: ['ag_p3'],
+        zone: 'Cuna de Alma — mobs Tripulación Roca Negra',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_p5', num: 5, branch: 0,
+        name: 'Mauvaise graine',
+        prereqs: ['ag_p4'],
+        zone: 'Lágrimas de Uronígride — mobs Sulfuriosos',
+        resources: 'Graines en mobs zona',
+        warning: null, badges: [],
+      },
+      {
+        id: 'ag_p6', num: 6, branch: 0,
+        name: 'Champ Pomy',
+        prereqs: ['ag_p5'],
+        zone: 'Lágrimas de Uronígride + varias salas Hipogeo Obsidiantre (sin jefe)',
+        resources: null,
+        warning: 'Entrar al Hipogeo sin terminar el dungeon.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'ag_p7', num: 7, branch: 0,
+        name: 'Gant graine',
+        prereqs: ['ag_p6'],
+        zone: 'Grieta Bú — mobs Gélifux',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_p8', num: 8, branch: 0,
+        name: 'Les graines de la discorde',
+        prereqs: ['ag_p7'],
+        zone: 'Bosque Petrificado — mobs Silvespíritus',
+        resources: '40x Graine de Ricin (drop en mobs) · 5x Graine de Vesce (recolectar en posiciones)',
+        warning: null, badges: [],
+      },
+      {
+        id: 'ag_p9', num: 9, branch: 0,
+        name: 'Le champ des héros',
+        prereqs: ['ag_p8'],
+        zone: 'Colmillos de Cristal — mobs Tejarveles',
+        resources: 'Graines en mobs zona',
+        warning: null, badges: [],
+      },
+      {
+        id: 'ag_p10', num: 10, branch: 0,
+        name: 'Champ borde le château',
+        prereqs: ['ag_p9'],
+        zone: 'Monte Tórrido — mobs Golosotes',
+        resources: 'Graines en mobs zona',
+        warning: null, badges: [],
+      },
+      // ALCHIMISTE
+      {
+        id: 'ag_a1', num: 1, branch: 1,
+        name: 'Cent vingt-trois fleurs, point comme les autres',
+        prereqs: [],
+        zone: 'Bosque pinos perdidos [-72,-31]',
+        resources: 'Flores en mobs zona',
+        warning: null, badges: ['choice'],
+      },
+      {
+        id: 'ag_a2', num: 2, branch: 1,
+        name: 'Botanique-nique-nique',
+        prereqs: ['ag_a1'],
+        zone: 'Bosque pinos perdidos',
+        resources: '40x Rose Nelson (drop mobs) · 5x Mime Osamodas (recolectar en 3 posiciones)',
+        warning: null, badges: [],
+      },
+      {
+        id: 'ag_a3', num: 3, branch: 1,
+        name: 'À fleur de peau',
+        prereqs: ['ag_a2'],
+        zone: 'Lago helado — mobs Güinos',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_a4', num: 4, branch: 1,
+        name: 'Mes lys fleurs',
+        prereqs: ['ag_a3'],
+        zone: 'Cuna de Alma — mobs Tripulación Roca Negra',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_a5', num: 5, branch: 1,
+        name: 'Rose à lys, Rose à lys, oh!',
+        prereqs: ['ag_a4'],
+        zone: 'Lágrimas de Uronígride — mobs Sulfuriosos',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_a6', num: 6, branch: 1,
+        name: 'Fleuries mais rougissent',
+        prereqs: ['ag_a5'],
+        zone: 'Lágrimas de Uronígride + varias salas Hipogeo Obsidiantre (sin jefe)',
+        resources: null,
+        warning: 'Entrar al Hipogeo sin terminar el dungeon.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'ag_a7', num: 7, branch: 1,
+        name: 'Heureux qui, comme les lys',
+        prereqs: ['ag_a6'],
+        zone: 'Grieta Bú — mobs Gélifux',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_a8', num: 8, branch: 1,
+        name: 'Le nom de la mycose',
+        prereqs: ['ag_a7'],
+        zone: 'Bosque Petrificado — mobs Silvespíritus',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_a9', num: 9, branch: 1,
+        name: 'Crocs n\'en bourrent',
+        prereqs: ['ag_a8'],
+        zone: 'Colmillos de Cristal — mobs Tejarveles',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'ag_a10', num: 10, branch: 1,
+        name: 'Ville fleurie',
+        prereqs: ['ag_a9'],
+        zone: 'Monte Tórrido — mobs Golosotes',
+        resources: null, warning: null, badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 4 — PROBLEMAS Y SOLUCIONES
+  // ─────────────────────────────────────────────────
+  {
+    id: 'prob',
+    name: 'Problemas y soluciones',
+    nameFR: 'Problèmes et solutions',
+    icon: '🔧',
+    parallel: 'Paralelo con: Jugar al médico · Los supervivientes · Agricultura o alquimia',
+    globalResources: '2x Planche à Repasser · 2x Planche de Salut · 2x Planche à Pain · 2x Planche à Pâtisserie · 35x Obsidienne · 2x Fer · 2x Perce-Neige · 1x Herbe à chacha · 1x Marteau de Boisaille · 4x Huile de Koode · 4x Metaria rouge · 5x Bakélélite · 5x Pyrute · 20x Bois de Chêne · 35x Bois de Tremble · 5x Pizza au boudin de boufmouth · 10x Bave du Kaskargo · 1x Pistil du Tynril · 5x Oeuf de Crapeur · +300.000 kamas en inventario',
+    quests: [
+      {
+        id: 'pr1', num: 1,
+        name: 'Pauvre Kiki',
+        prereqs: [],
+        zone: 'Burgo [-79,-42] — cueva bajo la casa',
+        resources: null,
+        warning: '1 combate contra ratas en la cueva (en grupo posible). IMPORTANTE: desbloquea prereq para L1-M3 (El mal lo dijo).',
+        badges: ['group'],
+      },
+      {
+        id: 'pr2', num: 2,
+        name: 'Star ski et Dutch',
+        prereqs: ['pr1'],
+        zone: 'Burgo',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'pr3', num: 3,
+        name: 'Groméo et Ginette',
+        prereqs: ['pr2'],
+        zone: 'Burgo',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'pr4', num: 4,
+        name: 'La marche de l\'impératrice',
+        prereqs: ['pr3'],
+        zone: 'Lago helado [-80,-46] — farmear Mamansots (obtener como follower)',
+        resources: 'Mamansot follower (drop en combates con Mamansots)',
+        warning: 'IMPORTANTE: desbloquea prereq para L2-M7 (À qui profite le boufmouth). Condiciones de características para hablar con ciertos PNJs.',
+        badges: [],
+      },
+      {
+        id: 'pr5', num: 5,
+        name: 'Gène et tique',
+        prereqs: ['pr4'],
+        zone: 'Campos de hielo [-69,-42] — mobs zona',
+        resources: null,
+        warning: 'IMPORTANTE: desbloquea prereq para L1-M3 (El mal lo dijo).',
+        badges: [],
+      },
+      {
+        id: 'pr6', num: 6,
+        name: 'Manque de re-peau',
+        prereqs: ['pr5'],
+        zone: 'Cuna de Alma — mobs Tripulación Roca Negra',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'pr7', num: 7,
+        name: 'Scierie Bambelle',
+        prereqs: ['pr6'],
+        zone: 'Lágrimas de Uronígride + Bosque Petrificado',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'pr8', num: 8,
+        name: 'Semer ses graines',
+        prereqs: ['pr7'],
+        zone: 'Colmillos de Cristal — mobs Tejarveles',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'pr9', num: 9,
+        name: 'Une blague vaseuse?',
+        prereqs: ['pr8'],
+        zone: 'Monte Tórrido — mobs Golosotes',
+        resources: null, warning: null, badges: [],
+      },
+      {
+        id: 'pr10', num: 10,
+        name: 'Un volcan s\'éteint',
+        prereqs: ['pr9'],
+        zone: 'Castillo Kontatras',
+        resources: null, warning: null, badges: [],
+      },
+    ]
+  },
+
+,
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 5 — LA MAIRE DÉNIE (Bienvenue à Frigost)
+  // ─────────────────────────────────────────────────
+  {
+    id: 'maire',
+    name: 'La maire dénie',
+    nameFR: 'La maire dénie — Bienvenue à Frigost',
+    icon: '🏛',
+    parallel: 'Paralelo con: Problemas y soluciones · Agricultura o alquimia · Los supervivientes M1',
+    warning: '⚠ Este logro agrupa misiones de acceso fundamentales. Bienvenue à Frigost es prereq para L1-M3 (El mal lo dijo). Hacerlo lo antes posible.',
+    quests: [
+      {
+        id: 'ma1', num: 1,
+        name: 'La terre banquise',
+        prereqs: [],
+        zone: 'Burgo [-77,-42] — visitar zonas de Frigost 1',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ma2', num: 2,
+        name: 'La maire de glace',
+        prereqs: ['ma1'],
+        zone: 'Burgo — PNJs de la alcaldesa',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ma3', num: 3,
+        name: 'Full Contact',
+        prereqs: [],
+        zone: 'Campos de hielo — mobs Jalamuts',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'ma4', num: 4,
+        name: 'Les monologues du vaccin',
+        prereqs: [],
+        zone: 'Campos de hielo — misión previa a Los monólogos de la vacuna (L1-M1)',
+        resources: null,
+        warning: 'Esta misión es la versión "de acceso" previa al logro Jugar al médico.',
+        badges: [],
+      },
+      {
+        id: 'ma5', num: 5,
+        name: 'Bienvenue à Frigost',
+        prereqs: ['ma2', 'ma3', 'ma4'],
+        zone: 'Burgo [-77,-42] — entregar a la Maire Cantille',
+        resources: null,
+        warning: '⚠ IMPORTANTE: completar esta misión desbloquea el prereq para L1-M3 (El mal lo dijo). También desbloquea L\'essentiel est dans le Lac Gelé y Ennemis d\'état.',
+        badges: [],
+      },
+      {
+        id: 'ma6', num: 6,
+        name: 'L\'essentiel est dans le Lac Gelé',
+        prereqs: ['ma5'],
+        zone: 'Lago helado — mobs Güinos y zona',
+        resources: null,
+        warning: 'Prereq para Les rescapés de Frigost y Frigost une île pas comme les autres.',
+        badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 6 — LES RESCAPÉS DE FRIGOST
+  // ─────────────────────────────────────────────────
+  {
+    id: 'rescapes',
+    name: 'Los rescatados de Frigost',
+    nameFR: 'Les rescapés de Frigost',
+    icon: '🆘',
+    parallel: 'Este logro se completa automáticamente al terminar las 7 misiones indicadas de otros logros',
+    warning: '⚠ Este logro NO tiene misiones propias — se completa haciendo misiones de Los supervivientes (L2). Marca cada una manualmente cuando la hagas en L2.',
+    quests: [
+      {
+        id: 'resc1', num: 1,
+        name: 'Bricole Girl',
+        prereqs: [],
+        zone: '→ Ver Logro 2 — Los supervivientes M1',
+        resources: null,
+        warning: 'Esta misión cuenta tanto para Los supervivientes como para este logro.',
+        badges: [],
+      },
+      {
+        id: 'resc2', num: 2,
+        name: 'Promenons-nous dans les bois',
+        prereqs: ['resc1'],
+        zone: '→ Ver Logro 2 — Los supervivientes M2',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'resc3', num: 3,
+        name: 'Les chasseurs',
+        prereqs: ['resc2'],
+        zone: '→ Ver Logro 2 — Los supervivientes M3',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'resc4', num: 4,
+        name: 'Il préfère la mort en mer',
+        prereqs: ['resc3'],
+        crossPrereqs: [
+          { label: 'Antiroyaliste', logro: 'Porte, monstre, trésor' },
+          { label: 'Les joyeux de la couronne', logro: 'Porte, monstre, trésor' },
+        ],
+        zone: '→ Ver Logro 2 — Los supervivientes M4',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'resc5', num: 5,
+        name: 'Chauffage à moindre frais',
+        prereqs: ['resc4'],
+        crossPrereqs: [
+          { label: 'Fais dodo, t\'auras du gâteau', logro: 'Porte, monstre, trésor' },
+        ],
+        zone: '→ Ver Logro 2 — Los supervivientes M5',
+        resources: null,
+        warning: null,
+        badges: [],
+      },
+      {
+        id: 'resc6', num: 6,
+        name: 'À la recherche de Dan Lavy',
+        prereqs: ['resc5'],
+        zone: '→ Ver Logro 2 — Los supervivientes M6',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'resc7', num: 7,
+        name: 'À qui profite le boufmouth',
+        prereqs: ['resc6'],
+        crossPrereqs: [
+          { label: 'Lavomatique', logro: 'Porte, monstre, trésor' },
+          { label: 'La marche de l\'impératrice', logro: 'Problemas y soluciones M4' },
+        ],
+        zone: '→ Ver Logro 2 — Los supervivientes M7',
+        resources: null,
+        warning: 'Al completar estas 7 misiones, volver con la Maire Cantille en [-77,-42] para terminar este logro.',
+        badges: [],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 7 — PORTE, MONSTRE, TRÉSOR
+  // ─────────────────────────────────────────────────
+  {
+    id: 'porte',
+    name: 'Porte, monstre, trésor',
+    nameFR: 'Porte, monstre, trésor',
+    icon: '🔑',
+    parallel: '⚠ HACER LO ANTES POSIBLE — estas misiones desbloquean prereqs críticos para Logros 1 y 2',
+    warning: '⚠ CRÍTICO: cada misión de este logro desbloquea el acceso a una mazmorra Y genera un prereq que bloquea misiones de otros logros. Hacerlas en paralelo con todo lo demás desde el principio.',
+    globalResources: 'Cada misión requiere completar el dungeon correspondiente + tener ya hecha la mazmorra anterior',
+    quests: [
+      {
+        id: 'pt1', num: 1,
+        name: 'Antiroyaliste — Porte Royalmouth',
+        prereqs: [],
+        zone: 'Mazmorra 1 — Serre du Royalmouth (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M4 (Il préfère la mort en mer). Hacer cuanto antes.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt2', num: 2,
+        name: 'Les joyeux de la couronne — Porte Mansot Royal',
+        prereqs: ['pt1'],
+        zone: 'Mazmorra 2 — Excavation du Mansot Royal (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M4 (Il préfère la mort en mer). Hacer cuanto antes.',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt3', num: 3,
+        name: 'Fais dodo, t\'auras du gâteau — Porte Ben le Ripate',
+        prereqs: ['pt2'],
+        zone: 'Mazmorra 3 — Épave du Golandais Violent (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M5 (Chauffage à moindre frais).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt4', num: 4,
+        name: 'Lavomatique — Porte Obsidiantre',
+        prereqs: ['pt3'],
+        zone: 'Mazmorra 4 — Hypogée de l\'Obsidiantre (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M7 (À qui profite le boufmouth).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt5', num: 5,
+        name: 'Pas de quartier — Porte Tengu Givrefoux',
+        prereqs: ['pt4'],
+        zone: 'Mazmorra 5 — Tanière Givrefoux (completa)',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt6', num: 6,
+        name: 'Sans ma barbe, quelle barbe — Porte Korriandre',
+        prereqs: ['pt5'],
+        zone: 'Mazmorra 6 — Antre du Korriandre (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M9 (Un ami qui ne vous veut pas que du bien).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt7', num: 7,
+        name: 'Là-haut sur la montagne — Porte Kolosso',
+        prereqs: ['pt6'],
+        zone: 'Mazmorra 7 — Cavernes du Kolosso (completa)',
+        resources: null,
+        warning: '⚠ PREREQ PARA: L2-M10 (Maya la belle).',
+        badges: ['dungeon'],
+      },
+      {
+        id: 'pt8', num: 8,
+        name: 'Le festin des Gloursons — Porte Glourséleste',
+        prereqs: ['pt7'],
+        zone: 'Mazmorra 8 — Antichambre des Gloursons (completa)',
+        resources: null,
+        warning: null,
+        badges: ['dungeon'],
+      },
+    ]
+  },
+
+  // ─────────────────────────────────────────────────
+  // LOGRO 8 — FRIGOST, UNE ÎLE PAS COMME LES AUTRES
+  // ─────────────────────────────────────────────────
+  {
+    id: 'touriste',
+    name: 'Frigost, una isla diferente',
+    nameFR: 'Frigost, une île pas comme les autres',
+    icon: '🗺',
+    parallel: 'Hacer al final — requiere haber completado todos los dungeons de Frigost 1 y 2',
+    quests: [
+      {
+        id: 'tour1', num: 1,
+        name: 'L\'essentiel est dans le Lac Gelé',
+        prereqs: ['ma5'],
+        zone: '→ Ver Logro 5 — La maire dénie M6',
+        resources: null,
+        warning: 'Prereq obligatorio para este logro.',
+        badges: [],
+      },
+      {
+        id: 'tour2', num: 2,
+        name: 'Frigost, une île pas comme les autres',
+        prereqs: ['tour1'],
+        zone: 'Burgo [-77,-42] — Lucette Brifian',
+        resources: null,
+        warning: 'Visitar 11 mapas específicas de toda la isla. Requiere haber completado TODOS los dungeons de Frigost 1 y 2 para poder acceder a todas las zonas.',
+        badges: [],
+      },
+    ],
+    extraInfo: [
+      '📍 Serre de Frigost [-84,-49]',
+      '📍 Transporteur Frigostien [-68,-34]',
+      '📍 Carrière de glace [-64,-55]',
+      '📍 Village englouti [-61,-58]',
+      '📍 Récifs du Berceau d\'Alma [-52,-71]',
+      '📍 Grotte aquatique des Larmes d\'Ouronigride [-73,-86]',
+      '📍 Antre du YeCh\'Ti [-79,-78]',
+      '📍 Cœur de la forêt pétrifiée [-76,-68]',
+      '📍 Machinerie des Crocs de verre [-64,-65]',
+      '📍 Mont Torrideau [-63,-75]',
+      '📍 Château Kontatras (zona interior)',
+    ],
+  },
+
+];
+
+// ═══════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════
+
+const STORAGE_KEY = 'frigost_progress_v1';
+const BRANCH_KEY = 'frigost_branches_v1';
+
+let done = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+let branches = JSON.parse(localStorage.getItem(BRANCH_KEY) || '{}'); // achievementId -> branchIndex
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+  localStorage.setItem(BRANCH_KEY, JSON.stringify(branches));
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+
+function isQuestDone(id) { return !!done[id]; }
+
+function isQuestLocked(quest, achievement) {
+  // Check internal prereqs
+  for (const pid of (quest.prereqs || [])) {
+    if (!isQuestDone(pid)) return true;
+  }
+  // Branch logic
+  if (quest.branch !== undefined && achievement.hasBranches) {
+    const selectedBranch = branches[achievement.id];
+    if (selectedBranch === undefined) {
+      // No branch selected yet — lock all branch quests
+      return true;
+    }
+    if (quest.branch !== selectedBranch) return true;
+  }
+  return false;
+}
+
+function getActiveQuests(achievement) {
+  if (!achievement.hasBranches) return achievement.quests;
+  const b = branches[achievement.id];
+  if (b === undefined) return [];
+  return achievement.quests.filter(q => q.branch === b);
+}
+
+function countDone(achievement) {
+  const qs = getActiveQuests(achievement);
+  return qs.filter(q => isQuestDone(q.id)).length;
+}
+
+function countTotal(achievement) {
+  return getActiveQuests(achievement).length;
+}
+
+function isAchievementDone(achievement) {
+  const total = countTotal(achievement);
+  if (total === 0) return false;
+  return countDone(achievement) === total;
+}
+
+function badgeHTML(badges) {
+  const map = {
+    dungeon: ['badge-dungeon', '⚔ Mazmorra'],
+    wait: ['badge-wait', '⏳ Esperar'],
+    group: ['badge-group', '👥 Grupo'],
+    solo: ['badge-solo', '👤 Solo'],
+    choice: ['badge-choice', '⚡ Inicio libre'],
+  };
+  return (badges || []).map(b => {
+    const [cls, label] = map[b] || ['', b];
+    return `<span class="badge ${cls}">${label}</span>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════
+
+function renderAll() {
+  renderTabs();
+  renderAchievements();
+  updateGlobal();
+}
+
+function renderTabs() {
+  const container = document.getElementById('tabsContainer');
+  container.innerHTML = ACHIEVEMENTS.map((a, i) => {
+    const done = isAchievementDone(a);
+    return `<button class="tab-btn${done ? ' completed' : ''}" onclick="scrollToAchievement('ach-${a.id}')" title="${a.nameFR}">${a.icon} ${a.name}</button>`;
+  }).join('');
+}
+
+function scrollToAchievement(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); openAchievement(id); }
+}
+
+function openAchievement(id) {
+  const el = document.getElementById(id);
+  if (el && !el.classList.contains('open')) el.classList.add('open');
+}
+
+function renderAchievements() {
+  const container = document.getElementById('achievementsContainer');
+  container.innerHTML = ACHIEVEMENTS.map(a => renderAchievement(a)).join('');
+}
+
+function renderAchievement(a) {
+  const done = isAchievementDone(a);
+  const doneCount = countDone(a);
+  const total = countTotal(a);
+  const pct = total > 0 ? Math.round(doneCount / total * 100) : 0;
+
+  let body = '';
+
+  // Parallel note
+  if (a.parallel) {
+    body += `<div class="parallel-note"><span class="icon">🔀</span><span>${a.parallel}</span></div>`;
+  }
+
+  // Branch warning
+  if (a.hasBranches && a.warning) {
+    body += `<div class="parallel-note" style="color:var(--warn2);background:rgba(192,120,32,0.06)"><span class="icon">⚠</span><span>${a.warning}</span></div>`;
+  }
+
+  // Global resources
+  if (a.globalResources) {
+    body += `<div class="global-resources"><strong>RECURSOS GLOBALES: </strong>${a.globalResources}</div>`;
+  }
+
+  // Branch selector
+  if (a.hasBranches) {
+    const selectedBranch = branches[a.id];
+    body += `<div class="branch-selector">
+      <span class="branch-label">ELEGIR RAMA:</span>
+      ${a.branches.map((b, i) => `<button class="branch-btn${selectedBranch === i ? ' selected' : ''}" onclick="selectBranch('${a.id}', ${i})">${b}</button>`).join('')}
+      ${selectedBranch !== undefined ? `<button class="branch-btn" onclick="selectBranch('${a.id}', undefined)" style="color:var(--red);border-color:var(--red)">✕ Cambiar</button>` : ''}
+    </div>`;
+  }
+
+  // Quests
+  const questsToShow = a.hasBranches
+    ? (branches[a.id] !== undefined ? a.quests.filter(q => q.branch === branches[a.id]) : [])
+    : a.quests;
+
+  if (a.hasBranches && branches[a.id] === undefined) {
+    body += `<div class="quest"><div style="color:var(--text3);font-style:italic;font-size:0.9rem;padding:8px 0">Selecciona una rama para ver las misiones.</div></div>`;
+  } else {
+    body += questsToShow.map(q => renderQuest(q, a)).join('');
+  }
+
+  if (done) {
+    body += `<div class="achievement-done-badge">✦ LOGRO COMPLETADO ✦</div>`;
+  }
+
+  // Extra info (list of locations etc)
+  if (a.extraInfo) {
+    body += `<div class="global-resources" style="border-top:1px solid var(--border)"><strong>MAPAS A VISITAR: </strong>${a.extraInfo.join(' · ')}</div>`;
+  }
+
+  return `
+    <div class="achievement${done ? ' completed' : ''}" id="ach-${a.id}">
+      <div class="achievement-header" onclick="toggleAchievement('ach-${a.id}')">
+        <div class="achievement-icon">${a.icon}</div>
+        <div class="achievement-title">
+          <h2>${a.name}</h2>
+          <div class="fr-name">${a.nameFR}</div>
+        </div>
+        <div class="achievement-progress">
+          <div class="mini-bar-wrap"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+          <span class="progress-text">${doneCount}/${total}</span>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="achievement-body">${body}</div>
+    </div>`;
+}
+
+function renderQuest(q, a) {
+  const isDone = isQuestDone(q.id);
+  const locked = isQuestLocked(q, a);
+
+  let classes = 'quest';
+  if (isDone) classes += ' done';
+  if (locked && !isDone) classes += ' locked';
+
+  const checkContent = isDone ? '✓' : '';
+
+  let meta = '';
+
+  // Cross prereqs
+  if (q.crossPrereqs && q.crossPrereqs.length) {
+    q.crossPrereqs.forEach(cp => {
+      meta += `<div class="quest-prereq"><span class="prereq-icon">🔗</span><span><span class="prereq-cross">PREREQ CRUZADO:</span> ${cp.label} <span style="color:var(--text3)">— ${cp.logro}</span></span></div>`;
+    });
+  }
+
+  // Zone
+  if (q.zone) {
+    meta += `<div class="quest-zone"><span>📍</span><span>${q.zone}</span></div>`;
+  }
+
+  // Resources
+  if (q.resources) {
+    meta += `<div class="quest-resources"><span class="res-label">ITEMS:</span>${q.resources}</div>`;
+  }
+
+  // Warning
+  if (q.warning) {
+    meta += `<div class="quest-warning"><span>⚠</span><span>${q.warning}</span></div>`;
+  }
+
+  if (locked && !isDone) {
+    meta += `<div class="quest-locked-msg">🔒 Bloqueada — completa las misiones anteriores primero</div>`;
+  }
+
+  return `
+    <div class="${classes}" id="quest-${q.id}">
+      <div class="quest-check" onclick="toggleQuest('${q.id}', '${a.id}')">${checkContent}</div>
+      <div class="quest-content">
+        <div class="quest-top">
+          <span class="quest-num">M${q.num}</span>
+          <span class="quest-name">${q.name}</span>
+          <div class="quest-badges">${badgeHTML(q.badges)}</div>
+        </div>
+        ${meta ? `<div class="quest-meta">${meta}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════
+
+function toggleAchievement(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function toggleQuest(questId, achievementId) {
+  done[questId] = !done[questId];
+  save();
+  renderAll();
+  // Reopen
+  openAchievement('ach-' + achievementId);
+}
+
+function selectBranch(achievementId, branchIndex) {
+  if (branchIndex === undefined) {
+    // Confirm before clearing
+    if (!confirm('¿Seguro que quieres cambiar de rama? Se perderá el progreso de las misiones de la rama actual.')) return;
+    delete branches[achievementId];
+    // Clear done quests of this achievement
+    const a = ACHIEVEMENTS.find(x => x.id === achievementId);
+    if (a) a.quests.forEach(q => { delete done[q.id]; });
+  } else {
+    branches[achievementId] = branchIndex;
+  }
+  save();
+  renderAll();
+  openAchievement('ach-' + achievementId);
+}
+
+function updateGlobal() {
+  let total = 0, doneCount = 0;
+  ACHIEVEMENTS.forEach(a => {
+    total += countTotal(a);
+    doneCount += countDone(a);
+  });
+  const pct = total > 0 ? Math.round(doneCount / total * 100) : 0;
+  document.getElementById('globalBar').style.width = pct + '%';
+  document.getElementById('globalCount').textContent = `${doneCount} / ${total} misiones`;
+}
+
+function resetAll() {
+  if (!confirm('¿Resetear TODO el progreso? Esta acción no se puede deshacer.')) return;
+  done = {};
+  branches = {};
+  save();
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+renderAll();
+</script>
+</body>
+</html>
